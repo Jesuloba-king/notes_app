@@ -14,7 +14,6 @@ class NotesPage extends StatefulWidget {
 }
 
 class _NotesPageState extends State<NotesPage> {
-
   @override
   void initState() {
     readNotes();
@@ -25,66 +24,73 @@ class _NotesPageState extends State<NotesPage> {
   final textController = TextEditingController();
 
   //create a note
-  void createNote(){
-    showDialog(context: context, builder: (context) => AlertDialog(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      content: TextField(
-        controller: textController,
-      ),
-      actions: [
-        MaterialButton(onPressed: (){
-          //
-          context.read<NoteDatabase>().addNote(textController.text);
+  void createNote() {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              content: TextField(
+                controller: textController,
+              ),
+              actions: [
+                MaterialButton(
+                  onPressed: () {
+                    //
+                    context.read<NoteDatabase>().addNote(textController.text);
 
-          textController.clear();
-          
-          //pop dialog
-          Navigator.pop(context);
-        },
-        child: const Text('Create'),
-        ),
-      ],
-    ));
+                    textController.clear();
+
+                    //pop dialog
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Create'),
+                ),
+              ],
+            ));
   }
 
   //read notes
-  void readNotes(){
+  void readNotes() {
     context.read<NoteDatabase>().fetchNotes();
   }
 
   //update a note
-  void updateNote(Note note){
+  void updateNote(Note note) {
     //pre-fill the current note text
     textController.text = note.text;
-    showDialog(context: context, builder: (context){
-      return AlertDialog(
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        title: const Text('Update Note'),
-        content: TextField(
-          controller: textController,
-        ),
-        actions: [
-          MaterialButton(onPressed: (){
-            //
-            context.read<NoteDatabase>().updateNotes(note.id, textController.text);
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            title: const Text('Update Note'),
+            content: TextField(
+              controller: textController,
+            ),
+            actions: [
+              MaterialButton(
+                onPressed: () {
+                  //
+                  context
+                      .read<NoteDatabase>()
+                      .updateNotes(note.id, textController.text);
 
-            textController.clear();
+                  textController.clear();
 
-            //pop dialog
-            Navigator.pop(context);
-          },
-            child: const Text('Update'),
-          ),
-        ],
-      );
-    });
+                  //pop dialog
+                  Navigator.pop(context);
+                },
+                child: const Text('Update'),
+              ),
+            ],
+          );
+        });
   }
 
   //delete a note
-  void deleteNote(int id){
+  void deleteNote(int id) {
     context.read<NoteDatabase>().deleteNote(id);
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -93,8 +99,8 @@ class _NotesPageState extends State<NotesPage> {
 
     //current notes
     List<Note> currentNotes = noteDatabase.currentNotes;
-    return   Scaffold(
-      backgroundColor:Theme.of(context).colorScheme.surface,
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -102,37 +108,45 @@ class _NotesPageState extends State<NotesPage> {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).colorScheme.primary,
-        onPressed: (){
+        onPressed: () {
           createNote();
         },
-        child:   Icon(Icons.add, color: Theme.of(context).colorScheme.inversePrimary,),
+        child: Icon(
+          Icons.add,
+          color: Theme.of(context).colorScheme.inversePrimary,
+        ),
       ),
       drawer: const MyDrawer(),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           //HEADING
-            Padding(padding: const EdgeInsets.only(left:25),
-            child: Text("Notes",
+          Padding(
+            padding: const EdgeInsets.only(left: 25),
+            child: Text(
+              "Notes",
               style: TextStyle(
-                fontSize: 48, fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.inversePrimary
-              ),
+                  fontSize: 48,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.inversePrimary),
             ),
           ),
 
           //List of notes
           // if(currentNotes.isNotEmpty)
-          ListView.builder(
-              itemCount: currentNotes.length,
-              shrinkWrap: true,
-              itemBuilder: (context, index){
-                final note = currentNotes[index];
-            return NotesTile(text: note.text,
-            onEditPressed: () => updateNote(note),
-              onDeletePressed: () => deleteNote(note.id),
-            );
-          }),
+          Expanded(
+            child: ListView.builder(
+                itemCount: currentNotes.length,
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  final note = currentNotes[index];
+                  return NotesTile(
+                    text: note.text,
+                    onEditPressed: () => updateNote(note),
+                    onDeletePressed: () => deleteNote(note.id),
+                  );
+                }),
+          ),
 
           // else Column(
           //   mainAxisAlignment: MainAxisAlignment.center,
